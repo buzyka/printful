@@ -209,4 +209,12 @@ class FileCacheAdapterTest extends TestCase
         };
         $cacheObj->set($key, $value, $duration);
     }
+
+    public function testInvalidateOject()
+    {
+        $key = 'some_key';
+        $cacheObj = $this->getCacheObject();
+        $cacheObj->set($key, 'some value', -1);
+        $this->assertNull($cacheObj->get($key));
+    }
 }

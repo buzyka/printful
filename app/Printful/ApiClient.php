@@ -7,7 +7,17 @@ class ApiClient
 {
     const SERVICE_BASE_URL = 'https://api.printful.com';
 
+    /**
+     * @var \GuzzleHttp\HandlerStack|null
+     */
+    protected static $handlerStack=null;
+
     protected $apiKey;
+
+    public static function setGuzzleMock(\GuzzleHttp\HandlerStack $handlerStack)
+    {
+        self::$handlerStack = $handlerStack;
+    }
 
     public function __construct(string $apiKey = null)
     {
@@ -31,10 +41,22 @@ class ApiClient
         $url = static::SERVICE_BASE_URL . $apiMethodObject->requestPath();
         $method = $apiMethodObject->requestMethod();
         $options = $this->updateOptions($apiMethodObject->requestOptions());
-
-        $client = new \GuzzleHttp\Client();
+        $client = $this->getHttpClient();
         $response = $client->request($method, $url, $options);
         return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * @return \GuzzleHttp\Client
+     */
+    protected function getHttpClient()
+    {
+        $clientConfig = [];
+        if (!is_null(self::$handlerStack)){
+            $clientConfig['handler'] =self::$handlerStack;
+            self::$handlerStack = null;
+        }
+        return new \GuzzleHttp\Client($clientConfig);
     }
 
     protected function updateOptions(array $options)

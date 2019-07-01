@@ -5,14 +5,13 @@ namespace App\Printful;
 
 
 use App\Cache\CacheInterface;
+use App\Cache\CacheAdapterException;
 use App\Printful\ApiClient;
 use App\Printful\ApiRequestException;
 
 abstract class AbstractApiMethod  implements ApiMethodInterface
 {
     const SUCCESS_RESPONSE_CODE = 200;
-
-    protected $lastResponse;
 
     /**
      * @var string
@@ -24,12 +23,19 @@ abstract class AbstractApiMethod  implements ApiMethodInterface
     private $cacheInstance;
 
     /**
+     * Cache duration in seconds
+     * @var int
+     */
+    private $cacheDuration;
+
+    /**
      * @inheritDoc
      */
     public function __construct(string $apiKey, CacheInterface $cacheInstance)
     {
         $this->apiKey = $apiKey;
         $this->cacheInstance = $cacheInstance;
+        $this->cacheDuration = 5*60; //default cache duration is 5 minutes
     }
 
     /**
@@ -38,11 +44,21 @@ abstract class AbstractApiMethod  implements ApiMethodInterface
      */
     abstract protected function generateRequestCacheKey(): string;
 
+    /**
+     * Set Cache Duration
+     * @param int $duration
+     */
+    public function setCacheDuration(int $duration)
+    {
+        $this->cacheDuration = $duration;
+    }
+
     protected function runRequest()
     {
         if (is_null($response = $this->getResponseFromCache())){
             try {
                 $response = $this->requestThroughApiClient();
+                $this->putResponseToCache($response);
             } catch (\Exception $apiClientException){
                 throw new ApiRequestException($apiClientException->getMessage(), $apiClientException->getCode());
             }
@@ -59,11 +75,19 @@ abstract class AbstractApiMethod  implements ApiMethodInterface
         return $this->cacheInstance->get($this->generateRequestCacheKey());
     }
 
+    protected function putResponseToCache($responseData)
+    {
+        try{
+            $this->cacheInstance->set($this->generateRequestCacheKey(), $responseData, $this->cacheDuration);
+        } catch (CacheAdapterException $adapterException){
+            // @todo it is not critical, but we couldn't put data to cache
+
+        }
+    }
+
     protected function requestThroughApiClient()
     {
         $client = new ApiClient($this->apiKey);
         return $client->request($this);
     }
-
-
 }
