@@ -1,4 +1,4 @@
-# Prontful
+# Printful
 
 INSTALLATION
 ------------
