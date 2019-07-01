@@ -1,14 +1,25 @@
 <?php
-
 namespace App\Cache\Adapter;
 
 use App\Cache\CacheAdapterException;
 
-
+/**
+ * Class FileCacheAdapter
+ *
+ * @author Viktor Buzyka <vbuzyka@gmail.com>
+ * @package App\Cache\Adapter
+ */
 class FileCacheAdapter extends \App\Cache\AbstractCacheAdapter
 {
+    /**
+     * List of characters that are not allowed  within filenames.
+     */
     const UNACCEPTABLE_SYMBOLS = ['\\', '/', ':', '*', '?', '"', '<', '>', '|', '+', '%', '!', '@'];
 
+    /**
+     * File storage path
+     * @var string
+     */
     protected $storagePath = '';
 
     /**
@@ -106,16 +117,27 @@ class FileCacheAdapter extends \App\Cache\AbstractCacheAdapter
         return time()+$duration;
     }
 
+    /**
+     * Return full path to the file with cached data
+     * @param string $key
+     * @return string
+     */
     private function getFilePathByKey(string $key)
     {
        return $this->storagePath . DIRECTORY_SEPARATOR . $this->cleanFileName($key);
     }
 
+    /**
+     * Convert key to correct file name
+     * @param string $fileName
+     * @return string
+     */
     private function cleanFileName(string $fileName)
     {
         foreach (self::UNACCEPTABLE_SYMBOLS as $pos=>$symbol)
         {
             $fileName = str_replace($symbol, "$pos", $fileName);
+            $fileName = trim($fileName);
         }
         return $fileName;
     }

@@ -1,9 +1,12 @@
 <?php
-
-
 namespace App\Printful;
 
-
+/**
+ * Interface ApiMethodInterface
+ *
+ * @author Viktor Buzyka <vbuzyka@gmail.com>
+ * @package App\Printful
+*/
 interface ApiMethodInterface
 {
     /**
@@ -30,7 +33,4 @@ interface ApiMethodInterface
      * @return array
      */
     public function requestOptions(): array;
-
-
-
 }

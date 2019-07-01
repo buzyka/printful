@@ -1,6 +1,4 @@
 <?php
-
-
 namespace LocalTest\Printful;
 
 use App\Printful\ApiRequestException;
@@ -12,8 +10,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 
-
-class ShipingRateTest extends TestCase
+class ShippingRateTest extends TestCase
 {
     private $correctResponseFixture = '{
     "code": 200,
@@ -125,7 +122,6 @@ class ShipingRateTest extends TestCase
         $this->assertEquals($expectedArray, $shippingRate->getItems());
     }
 
-
     public function testSetAddress()
     {
         $shippingRate = $this->getShippingRate();
@@ -167,8 +163,6 @@ class ShipingRateTest extends TestCase
         $shippingRate->countryCode = 'US';
         $shippingRate->zip = 28273;
         $shippingRate->addItem(7679, 2);
-
-
 
         $expectedJson = '[
         {
@@ -222,9 +216,41 @@ class ShipingRateTest extends TestCase
         $shippingRate->calculate();
     }
 
-    public function testCache()
+    public function testPutCache()
     {
-        $shippingRate =  $this->getMockShippingRate();
+        $shippingRate =  $this->getShippingRateWithFileCache();
+
+        $shippingRate->calculate();
+        $this->assertEquals(1, $shippingRate->mockRequestCounter);
+    }
+
+    /**
+     * @depends testPutCache
+     */
+    public function testGetCache()
+    {
+        $shippingRate =  $this->getShippingRateWithFileCache();
+
+        $shippingRate->calculate();
+        $this->assertEquals(0, $shippingRate->mockRequestCounter);
+    }
+
+    private function getShippingRateWithFileCache()
+    {
+        // You don't need put real api-key here. All api requests should be mocked.
+        $apiKey = 'Some_Key';
+        AppCache::init('File', self::$cacheConfigurationFixture);
+
+        $shippingRate = new class($apiKey, AppCache::getInstance()) extends \App\Printful\Method\ShippingRate {
+            public $mockRequestCounter=0;
+
+            protected function requestThroughApiClient()
+            {
+                $this->mockRequestCounter++;
+                return parent::requestThroughApiClient();
+            }
+        };
+
         $shippingRate->setCacheDuration(5*60);
         $shippingRate->address = '11025 Westlake Dr';
         $shippingRate->city = 'Charlotte';
@@ -235,30 +261,6 @@ class ShipingRateTest extends TestCase
 
         $this->setGuzzleMock(200, $this->correctResponseFixture);
 
-        $shippingRate->calculate();
-        $this->assertEquals(1, $shippingRate->mockRequestCounter);
-        $this->setGuzzleMock(200, $this->correctResponseFixture);
-        $shippingRate->calculate();
-        $this->assertEquals(1, $shippingRate->mockRequestCounter);
+        return $shippingRate;
     }
-
-    private function getMockShippingRate()
-    {
-        // You don't need put real api-key here. All api requests should be mocked.
-        $apiKey = 'Some_Key';
-        AppCache::init('File', self::$cacheConfigurationFixture);
-
-        $srObject = new class($apiKey, AppCache::getInstance()) extends \App\Printful\Method\ShippingRate {
-            public $mockRequestCounter=0;
-
-            protected function requestThroughApiClient()
-            {
-                $this->mockRequestCounter++;
-                return parent::requestThroughApiClient();
-            }
-        };
-
-        return $srObject;
-    }
-
 }

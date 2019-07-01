@@ -1,9 +1,13 @@
 <?php
-
-
 namespace App\Cache;
 
-
+/**
+ * Class AppCache
+ * Singleton for getting cache adapter
+ *
+ * @author Viktor Buzyka <vbuzyka@gmail.com>
+ * @package App\Cache
+ */
 class AppCache
 {
     const ADAPTER_CLASS_TEMPLATE = '\Adapter\{}CacheAdapter';
@@ -11,8 +15,10 @@ class AppCache
     protected static $cacheInstance;
 
     /**
+     * Init configure and return cache adapter that will use in application.
      * @param string $adapter
      * @param null $configuration
+     * @return \App\Cache\CacheInterface
      * @throws AppCacheException
      */
     public static function init(string $adapter, $configuration = null)
@@ -27,11 +33,12 @@ class AppCache
         } else {
             throw new AppCacheException(AppCacheException::MESSAGE_ADAPTER_DOES_NOT_EXISTS);
         }
+        return static::getInstance();
     }
 
     /**
-     * Get Cache object instance
-     * @return \App\Cache\AbstractCacheAdapter
+     * Get Cache adapter instance
+     * @return \App\Cache\CacheInterface
      * @throws AppCacheException
      */
     public final static function getInstance()

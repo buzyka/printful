@@ -15,13 +15,4 @@ class CacheAdapterException extends \Exception
     const MESSAGE_WRITE_FAILURE = 'Storage write failure occurred';
     const MESSAGE_SERIALIZATION_NOT_SUPPORTED = 'Object does not support serialization.';
     const MESSAGE_ADAPTER_CONFIGURATION_REQUIRED = 'This type of adapter required aditional  configuration.';
-
-    /**
-     * @return string the user-friendly name of this exception
-     */
-    public function getName()
-    {
-        return 'Cache Adapter Exception';
-    }
-
 }

@@ -1,6 +1,4 @@
 <?php
-
-
 namespace LocalTest\Printful;
 
 use PHPUnit\Framework\TestCase;
@@ -54,5 +52,4 @@ class ApiClientTest extends TestCase
         $expectedObject = json_decode($this->correctResponseFixture);
         $this->assertEquals($expectedObject, $client->request($shippingRate));
     }
-
 }

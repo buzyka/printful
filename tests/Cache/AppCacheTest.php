@@ -1,6 +1,4 @@
 <?php
-
-
 namespace LocalTest\Cache;
 
 use App\Cache\Adapter\FileCacheAdapter;
@@ -8,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use App\Cache\AppCache;
 use App\Cache\{AppCacheException, CacheAdapterException};
 use App\Cache\Adapter\DummyCacheAdapter;
-
 
 class AppCacheTest extends TestCase
 {

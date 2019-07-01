@@ -1,14 +1,18 @@
 <?php
-
-
 namespace App\Printful;
-
 
 use App\Cache\CacheInterface;
 use App\Cache\CacheAdapterException;
 use App\Printful\ApiClient;
 use App\Printful\ApiRequestException;
 
+/**
+ * Class AbstractApiMethod
+ * Expected that each API method class inherit this abstraction
+ *
+ * @author Viktor Buzyka <vbuzyka@gmail.com>
+ * @package App\Printful
+ */
 abstract class AbstractApiMethod  implements ApiMethodInterface
 {
     const SUCCESS_RESPONSE_CODE = 200;
@@ -17,6 +21,7 @@ abstract class AbstractApiMethod  implements ApiMethodInterface
      * @var string
      */
     private $apiKey;
+
     /**
      * @var CacheInterface
      */
@@ -53,6 +58,11 @@ abstract class AbstractApiMethod  implements ApiMethodInterface
         $this->cacheDuration = $duration;
     }
 
+    /**
+     * Initiate request to Api and first step response processing (incapsulate caching)
+     * @return mixed
+     * @throws \App\Printful\ApiRequestException
+     */
     protected function runRequest()
     {
         if (is_null($response = $this->getResponseFromCache())){
@@ -70,11 +80,19 @@ abstract class AbstractApiMethod  implements ApiMethodInterface
         }
     }
 
+    /**
+     * Check response for the request in cache
+     * @return mixed|null
+     */
     protected function getResponseFromCache()
     {
         return $this->cacheInstance->get($this->generateRequestCacheKey());
     }
 
+    /**
+     * Put response for the request in cache
+     * @return mixed|null
+     */
     protected function putResponseToCache($responseData)
     {
         try{
@@ -85,6 +103,10 @@ abstract class AbstractApiMethod  implements ApiMethodInterface
         }
     }
 
+    /**
+     * Make API Request
+     * @return mixed
+     */
     protected function requestThroughApiClient()
     {
         $client = new ApiClient($this->apiKey);

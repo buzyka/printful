@@ -5,13 +5,16 @@ namespace App\Cache;
 
 /**
  * Class AbstractCacheAdapter
- * @package app\app
+ * Expected that each cache adapter should inherit this abstraction
+ *
+ * @author Viktor Buzyka <vbuzyka@gmail.com>
+ * @package App\Cache
  */
 abstract class AbstractCacheAdapter implements \App\Cache\CacheInterface
 {
     /**
      * AbstractCacheAdapter constructor.
-     * @param null $configuration
+     * @param null $configuration Adapter configuration if this type of adapter required it
      * @throws CacheAdapterException
      */
     public function __construct($configuration = null)
@@ -30,6 +33,7 @@ abstract class AbstractCacheAdapter implements \App\Cache\CacheInterface
     abstract public function isConfigurationRequired();
 
     /**
+     * Configure adapter
      * @param array|null $configuration
      * @return mixed
      */
@@ -48,7 +52,7 @@ abstract class AbstractCacheAdapter implements \App\Cache\CacheInterface
 
     /**
      * Serialize Value and expiration time if it need.
-     * Expected that this method called by method `set`, implemented by each inherit
+     * Expected that this method called by method `set`, implemented by each inherit     *
      * @param mixed $value
      * @param int|null $expirationTime
      * @return string

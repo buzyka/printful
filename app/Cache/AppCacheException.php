@@ -1,12 +1,11 @@
 <?php
-
-
 namespace App\Cache;
 
 /**
- * CacheAdapterException represents an exception caused by incorrect use or configure of cache adapter.
+ * CacheAdapterException represents an exception caused by incorrect use AppCache.
  *
- * @author
+ * @author Viktor Buzyka <vbuzyka@gmail.com>
+ * @package App\Cache
  */
 class AppCacheException extends \Exception
 {

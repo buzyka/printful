@@ -5,7 +5,6 @@ use PHPUnit\Framework\TestCase;
 use App\Cache\Adapter\FileCacheAdapter;
 use App\Cache\CacheAdapterException;
 
-
 class FileCacheAdapterTest extends TestCase
 {
     protected static $correctConfigurationFixture;
@@ -43,8 +42,6 @@ class FileCacheAdapterTest extends TestCase
             unlink($file);
         }
     }
-
-
 
     public function testIncorrectConfigurationFormat()
     {
